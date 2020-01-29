@@ -1,0 +1,94 @@
+<style>
+  body{
+    font-family: Helvetica, sans-serif;
+    width: auto;
+  }
+  label{
+    font-weight: bold;
+    color: black;
+  }
+  #Fill-color-text-field{
+    width: 100px;
+  }
+  #changeOpacity-field{
+    width: 50px;
+  }
+
+  .block{
+    background-color: darkgray;
+    width: 100;
+    height: 100;
+  }
+  
+  </style>
+  <p><font color="red">You will get an error if the selected object has no stroke!</p>
+  <p>
+    <label id="Fill-color-label">Colorcode<input id="Fill-color-text-field"></label>
+  </p>
+  <p>
+    <label>Type</label>
+    <button id= "dekobutton">凸</button>
+    <button id= "bokobutton">凹</button>
+  <p>
+    <label id="changeOpacity">Opacity(0-1)<input id="changeOpacity-field"></label> 
+  </p>
+  <p>
+    <label>Offset(click area↓)</label>
+    <div class="block" id="offset-target"></div>
+  </p>
+  <button id= "create">Create</button>
+  
+  <script>
+   //色変える
+    document.getElementById('Fill-color-text-field').onchange = () => {
+      document.getElementById('Fill-color-label').style.color = document.getElementById("Fill-color-text-field").value;
+      changeColor();
+    }
+    
+    function changeColor(){
+          val = document.getElementById("Fill-color-text-field").value;
+          // hexの指定に必要な6桁でなければはじく
+          if (val.length !== 6) {
+            return;
+          }
+        parent.postMessage({ pluginMessage: { type: 'Fill-change-color', val } }, '*')
+    }
+
+    //影の透明度変える
+    //エンターを押すと値が反映される
+    document.getElementById('changeOpacity-field').onchange = () => {
+      document.getElementById('changeOpacity').style.opacity = document.getElementById("Fill-color-text-field").value;
+      changeOpacity();
+    }
+    function changeOpacity(){
+      Opacity = document.getElementById("changeOpacity-field").value;
+          //  1以上だったらはじく
+          if (Opacity > 1) {
+            return;
+          }
+        parent.postMessage({ pluginMessage: { type: 'changeOpacity', Opacity } }, '*')
+    }
+
+
+    document.getElementById('dekobutton').onclick = () => {
+        parent.postMessage({pluginMessage: {type: 'dekobutton'}},'*')
+      }
+    
+    document.getElementById('bokobutton').onclick = () => {
+      parent.postMessage({pluginMessage: {type: 'bokobutton'}},'*')
+    }
+
+    //オフセット機能
+    let target = document.getElementById('offset-target');
+    target.addEventListener('click',getPosition);
+    function getPosition(e){
+      let offsetX = e.offsetX;
+      let offsetY = e.offsetY;
+      parent.postMessage({ pluginMessage: { type: 'changeOffset', offsetX,offsetY} }, '*')
+    }
+
+    document.getElementById('create').onclick = () => {
+      parent.postMessage({pluginMessage: {type: 'create'}},'*')
+    }
+  </script>
+
